@@ -1,0 +1,13 @@
+.post {
+  ul {
+    @extend %default-ul;
+  }
+  ol {
+    @extend %default-ol;
+  }
+  margin: em(30) 0;
+
+  h5 {
+    margin-bottom: em(10);
+  }
+}

@@ -3,7 +3,6 @@ title: Building a Blog
 date: 2014-01-02
 tags: HTML
 ---
-
 After reading a [great article](http://blog.tedgonder.com/a-few-more-things-i-learned-in-college) online, I realised starting a blog would be a good idea. I've been though this before, but with very little success.
 
 This time around, I decided to use [Middleman](http://middlemanapp.com) as I'd had good reviews.
