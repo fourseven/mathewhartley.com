@@ -12,7 +12,13 @@ gem 'bitters'
 gem 'bourbon'
 gem 'neat'
 
+gem 'nokogiri'
+gem 'sanitize'
+gem 'redcarpet'
+
 # For feed.xml.builder
 gem "builder", "~> 3.0"
 
 gem "middleman-livereload", "~> 3.4.0"
+gem "middleman-minify-html"
+gem "middleman-imageoptim"
