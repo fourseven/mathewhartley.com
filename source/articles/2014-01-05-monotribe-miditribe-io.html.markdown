@@ -36,3 +36,7 @@ Amazing Machines are a company based in Brazil, who make add-on boards for vario
 You could, for example, record a rhythm to a laptop and further adjust it before creating another rhythm on the device. Or use a full-size keyboard to play the synthesizer, as opposed to the tiny ribbon strip.
 
 Needless to say, the Monotribe only lasted until Boxing Day before I decided to open it up and install the add-on board - which will be my next post!
+
+Until then, here's a sample of what I've made so far (a telephone groove):
+
+<iframe class="vine-embed" src="https://vine.co/v/OHDiwHilBhA/embed/postcard?audio=1" width="600" height="600" frameborder="0"></iframe><script async src="//platform.vine.co/static/scripts/embed.js" charset="utf-8"></script>
