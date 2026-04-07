@@ -1,10 +1,151 @@
 ---
 import Base from "../layouts/Base.astro";
+
+const projects = [
+  {
+    title: "Haiku News Quiz",
+    description: "A news quiz in the form of a haiku.",
+    image: "/images/works/haiku-news.png",
+    url: "https://haiku-news-quiz.vercel.app",
+  },
+  {
+    title: "Tell Me A Story",
+    description: "Write a story using emojis.",
+    image: "/images/works/tell-me-a-story.png",
+    url: "https://tell-me-a-story.vercel.app",
+  },
+];
 ---
 
 <Base title="Works - MathewHartley.com">
-  <div class="hero">
-    <h1>Works</h1>
-    <p>A collection of projects and work — coming soon.</p>
+  <div class="works-hero">
+    <h1>Welcome to Works</h1>
+    <p>Works represents a suite of SaaS ideas, from experiments to complete products.</p>
+    <p>If you're looking for a new idea, or just want to see what I'm working on, you're in the right place.</p>
   </div>
+
+  <section class="works-content">
+    <h2>My Works</h2>
+    <div class="works-grid">
+      {projects.map((project) => (
+        <a href={project.url} class="works-card" target="_blank" rel="noopener noreferrer">
+          <img src={project.image} alt={"Screenshot of " + project.title} loading="lazy" />
+          <div class="works-card-body">
+            <h3>{project.title}</h3>
+            <p>{project.description}</p>
+            <span class="visit-link">Click to visit &gt;&gt;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
 </Base>
+
+<style>
+  .works-hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+  }
+
+  .works-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .works-hero p {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+    max-width: 32rem;
+    margin: 0 auto 0.5rem;
+  }
+
+  .works-content {
+    padding-top: 2rem;
+    text-align: center;
+  }
+
+  .works-content h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .works-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+
+  .works-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-card-bg);
+    border: 3px ridge var(--color-border);
+    text-decoration: none;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .works-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-hot-pink), var(--color-cyan), var(--color-yellow));
+    background-size: 200% 100%;
+    animation: marquee-bg 3s linear infinite;
+    z-index: 1;
+  }
+
+  .works-card:hover {
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 15px #00ffff33;
+  }
+
+  .works-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    border-bottom: 2px ridge var(--color-border);
+  }
+
+  .works-card-body {
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+  }
+
+  .works-card-body h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--color-cyan);
+    text-shadow: 1px 1px 0 #000;
+    margin-bottom: 0.35rem;
+  }
+
+  .works-card:hover .works-card-body h3 {
+    color: var(--color-yellow);
+    text-shadow: 1px 1px 0 #000, 0 0 8px #ffff0066;
+  }
+
+  .works-card-body p {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem;
+  }
+
+  .visit-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-accent);
+  }
+
+  .works-card:hover .visit-link {
+    color: var(--color-yellow);
+    text-shadow: 0 0 6px #ffff0066;
+  }
+</style>

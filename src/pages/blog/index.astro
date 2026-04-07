@@ -8,12 +8,27 @@ const posts = (await getCollection("blog")).sort(
 ---
 
 <Base title="Blog - MathewHartley.com" description="Blog posts by Mathew Hartley">
-  <h1>Blog</h1>
+  <h1>&#128196; Blog</h1>
+  <p style="color: var(--color-text-secondary); margin-top: 0.5rem;">
+    My collection of thoughts, projects, and tinkering.
+  </p>
+
+  <div class="sidebar-box">
+    <h3>&#128269; Categories</h3>
+    <ul>
+      <li><a href="/blog/tag/about-me">About Me</a></li>
+      <li><a href="/blog/tag/html">HTML</a></li>
+      <li><a href="/blog/tag/music">Music</a></li>
+      <li><a href="/blog/tag/electronics">Electronics</a></li>
+    </ul>
+  </div>
+
   <ul class="posts-list">
-    {posts.map((post) => (
+    {posts.map((post, i) => (
       <li class="post-item">
         <h2>
           <a href={`/blog/${post.id}`}>{post.data.title}</a>
+          {i === 0 && <span class="new-badge">NEW!</span>}
         </h2>
         <time datetime={post.data.date.toISOString()}>
           {post.data.date.toLocaleDateString("en-NZ", {

@@ -1,13 +1,161 @@
 ---
 import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
 ---
 
 <Base title="MathewHartley.com">
   <div class="hero">
-    <h1>Coming Soon</h1>
+    <h1>&#127775; Mathew Hartley &#127775;</h1>
+    <p class="tagline">Staff Engineer &middot; Ex-CTO &middot; Shopify/eCommerce</p>
+    <p class="location">&#127758; Wellington, New Zealand</p>
+  </div>
+
+  <div class="experience-box">
+    <h2>&#128187; About Me</h2>
     <p>
-      Get ready for an exciting new website, blog, and works page — launching
-      soon!
+      Staff Engineer at <a href="https://useamp.com"><strong>Amp</strong></a>, previously CTO at <a href="https://storypark.com"><strong>Storypark</strong></a>.
+      I build things with TypeScript, React, and data systems, with a background in Ruby/Rails.
+      Based in Wellington, where I recently swapped my emtb for a cargo ebike and traded flow trails for the school run. When I'm not writing code I'm usually trying to push the limits of what AI tools can do for personal productivity.
     </p>
   </div>
+
+  <div class="latest-posts">
+    <h2>&#128240; Latest Posts</h2>
+    {posts.map((post) => (
+      <div class="post-teaser">
+        <span class="post-date">{post.data.date.toLocaleDateString("en-NZ", { year: "numeric", month: "short", day: "numeric" })}</span>
+        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+      </div>
+    ))}
+    <p class="more-link"><a href="/blog">Read more &rarr;</a></p>
+  </div>
+
+  <div class="sidebar-box">
+    <h3>&#128218; Quick Links</h3>
+    <ul>
+      <li><a href="/works">See my Works</a></li>
+      <li><a href="https://github.com/fourseven">GitHub Profile</a></li>
+      <li><a href="https://www.linkedin.com/in/mathew-hartley/">LinkedIn</a></li>
+      <li><a href="/rss.xml">RSS Feed</a> &#128249;</li>
+    </ul>
+  </div>
+
+  <div class="guestbook">
+    <h3>&#128221; Guestbook</h3>
+    <div class="guestbook-entries">
+      <p><span class="name">CoolDude99:</span> nice site dude!!! keep up the good work <span class="date">(Jan 2, 2014)</span></p>
+      <p><span class="name">xX_MusicFan_Xx:</span> love the synth content &#127925; <span class="date">(Jan 6, 2014)</span></p>
+      <p><span class="name">WebMaster2000:</span> cool links page. wanna do a link exchange?? <span class="date">(Jan 10, 2014)</span></p>
+    </div>
+  </div>
 </Base>
+
+<style>
+  .tagline {
+    font-size: 1.2rem;
+    color: var(--neon-cyan);
+    margin-top: 0.5rem;
+  }
+
+  .location {
+    font-size: 0.9rem;
+    color: var(--neon-green);
+    margin-top: 0.25rem;
+  }
+
+  .about-box {
+    background: var(--dark-bg);
+    border: 3px ridge var(--border-color);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .about-box h2 {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    color: var(--neon-cyan);
+    margin-top: 0;
+  }
+
+  .about-box p {
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .about-box p:last-child {
+    margin-bottom: 0;
+  }
+
+  .experience-box {
+    background: var(--dark-bg);
+    border: 3px ridge var(--border-color);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .experience-box h2 {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    color: var(--neon-pink);
+    margin-top: 0;
+  }
+
+  .experience-box p {
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .latest-posts {
+    background: var(--dark-bg);
+    border: 3px ridge var(--border-color);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .latest-posts h2 {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    color: var(--neon-pink);
+    margin-top: 0;
+  }
+
+  .post-teaser {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .post-teaser:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .post-date {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .post-teaser a {
+    color: var(--neon-green);
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .post-teaser a:hover {
+    text-decoration: underline;
+  }
+
+  .more-link {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    text-align: right;
+  }
+
+  .more-link a {
+    color: var(--neon-cyan);
+  }
+</style>

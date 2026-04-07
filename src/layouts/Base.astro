@@ -8,6 +8,8 @@ const {
   title = "MathewHartley.com",
   description = "Blog and works by Mathew Hartley",
 } = Astro.props;
+
+const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -21,13 +23,32 @@ const {
     <title>{title}</title>
   </head>
   <body>
+    <div class="marquee-container">
+      <div class="marquee-scroll">
+        <span class="sparkle">&#9733;</span>
+        &#9733; Welcome to Mathew's corner of the internet &#9733;
+        <span class="sparkle">&#9733;</span>
+        Best viewed in Netscape Navigator 4.0 &#9733;
+        <span class="sparkle">&#9733;</span>
+        Now with 100% more CSS &#9733;
+        <span class="sparkle">&#9733;</span>
+        This site is Y2K compliant &#9733;
+        <span class="sparkle">&#9733;</span>
+        Sign my guestbook! &#9733;
+      </div>
+    </div>
+
+    <div class="construction-banner">
+      &#9888; UNDER CONSTRUCTION &#9888; PARDON OUR DUST &#9888; UNDER CONSTRUCTION &#9888;
+    </div>
+
     <header class="site-header">
       <nav>
-        <a href="/" class="site-title">Mathew Hartley</a>
+        <a href="/" class="site-title">&#11088; Mathew Hartley &#11088;</a>
         <div class="nav-links">
           <a href="/">Home</a>
-          <a href="/blog">Blog</a>
-          <a href="/works">Works</a>
+          <a href="/blog">&#128196; Blog</a>
+          <a href="/works">&#128736; Works</a>
         </div>
       </nav>
     </header>
@@ -37,13 +58,40 @@ const {
     </main>
 
     <footer class="site-footer">
-      <p>&copy; 2025 Mathew Hartley. All rights reserved.</p>
+      <hr class="star-divider" />
+
+      <p>&copy; {currentYear} Mathew Hartley. All rights reserved.</p>
+
       <div class="social-links">
         <a href="https://www.linkedin.com/in/mathew-hartley">LinkedIn</a>
+        <span class="sep">|</span>
         <a href="https://bsky.app/profile/fourseven.bsky.social">Bluesky</a>
+        <span class="sep">|</span>
         <a href="https://twitter.com/four_seven">Twitter</a>
+        <span class="sep">|</span>
         <a href="https://github.com/fourseven">GitHub</a>
       </div>
+
+      <div class="badge-row">
+        <span class="badge badge-netscape">Netscape Now!</span>
+        <span class="badge badge-ie">IE 4.0</span>
+        <span class="badge badge-notepad">Made with Notepad</span>
+        <span class="badge badge-midi">&#9835; MIDI Enabled</span>
+        <span class="badge badge-256">256 Colors</span>
+      </div>
+
+      <!--
+      <div class="visitor-counter">
+        You are visitor #<span>0</span><span>0</span><span>4</span><span>2</span><span>0</span><span>6</span>
+        since Jan 1, 2014
+      </div>
+
+      <div class="badge-row" style="margin-top: 0.75rem;">
+        <a href="https://en.wikipedia.org/wiki/GeoCities" class="badge badge-webring">&#8592; Prev</a>
+        <span class="badge badge-webring">WebRing</span>
+        <a href="https://en.wikipedia.org/wiki/GeoCities" class="badge badge-webring">Next &#8594;</a>
+      </div>
+      -->
     </footer>
   </body>
 </html>
