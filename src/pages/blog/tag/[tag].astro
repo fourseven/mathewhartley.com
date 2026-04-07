@@ -1,0 +1,52 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const allTags = new Set<string>();
+  posts.forEach((post) => {
+    post.data.tags.split(",").forEach((t: string) => {
+      allTags.add(t.trim().toLowerCase().replace(/\s+/g, "-"));
+    });
+  });
+
+  return [...allTags].map((tag) => ({
+    params: { tag },
+    props: {
+      posts: posts
+        .filter((post) =>
+          post.data.tags
+            .toLowerCase()
+            .split(",")
+            .map((t: string) => t.trim().replace(/\s+/g, "-"))
+            .includes(tag)
+        )
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+    },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<Base title={`Posts tagged "${tag}" - MathewHartley.com`}>
+  <h1>Posts tagged "{tag}"</h1>
+  <ul class="posts-list">
+    {posts.map((post) => (
+      <li class="post-item">
+        <h2>
+          <a href={`/blog/${post.id}`}>{post.data.title}</a>
+        </h2>
+        <time datetime={post.data.date.toISOString()}>
+          {post.data.date.toLocaleDateString("en-NZ", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </time>
+      </li>
+    ))}
+  </ul>
+</Base>

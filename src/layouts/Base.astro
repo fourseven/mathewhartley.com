@@ -1,0 +1,53 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "MathewHartley.com",
+  description = "Blog and works by Mathew Hartley",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav>
+        <a href="/" class="site-title">Mathew Hartley</a>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/blog">Blog</a>
+          <a href="/works">Works</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; 2025 Mathew Hartley. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/mathew-hartley">LinkedIn</a>
+        <a href="https://bsky.app/profile/fourseven.bsky.social">Bluesky</a>
+        <a href="https://twitter.com/four_seven">Twitter</a>
+        <a href="https://github.com/fourseven">GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import "../styles/global.css";
+</style>
