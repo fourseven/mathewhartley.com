@@ -39,7 +39,7 @@ const projects = [
     <div class="works-grid">
       {projects.map((project) => (
         <a href={project.url} class="works-card" target="_blank" rel="noopener noreferrer">
-          <Image src={project.image} alt={"Screenshot of " + project.title} loading="lazy" />
+          <Image src={project.image} alt={"Screenshot of " + project.title} loading="lazy" width={1280} height={720} />
           <div class="works-card-body">
             <h3>{project.title}</h3>
             <p>{project.description}</p>
