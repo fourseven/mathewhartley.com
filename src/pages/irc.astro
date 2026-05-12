@@ -62,8 +62,8 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initIRCChat } from "/src/client/irc-chat.ts";
+  <script>
+    import { initIRCChat } from "../client/irc-chat.ts";
     const params = new URLSearchParams(window.location.search);
     const channelParam = params.get("channel") ?? "";
     const seed = channelParam.toLowerCase().replace(/[^a-z0-9-]/g, "").substring(0, 30) || null;
