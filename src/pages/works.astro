@@ -25,6 +25,15 @@ const projects = [
     url: "https://tell-me-a-story.vercel.app",
   },
 ];
+
+const experiments = [
+  {
+    title: "Never-Ending Story",
+    description: "Star Wars crawl meets Gemini Nano. An AI-generated children's story that writes itself forever, entirely in your browser.",
+    url: "/story",
+    requires: "Chrome desktop with built-in AI enabled",
+  },
+];
 ---
 
 <Base title="Works - MathewHartley.com">
@@ -44,6 +53,23 @@ const projects = [
             <h3>{project.title}</h3>
             <p>{project.description}</p>
             <span class="visit-link">Click to visit &gt;&gt;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="works-content experiments">
+    <h2>Experiments</h2>
+    <div class="works-grid">
+      {experiments.map((exp) => (
+        <a href={exp.url} class="works-card experiment-card">
+          <div class="experiment-badge">Chrome AI</div>
+          <div class="works-card-body">
+            <h3>{exp.title}</h3>
+            <p>{exp.description}</p>
+            {exp.requires && <span class="requires">Requires: {exp.requires}</span>}
+            <span class="visit-link">Try it out &gt;&gt;</span>
           </div>
         </a>
       ))}
@@ -158,5 +184,37 @@ const projects = [
   .works-card:hover .visit-link {
     color: var(--color-yellow);
     text-shadow: 0 0 6px #ffff0066;
+  }
+
+  .experiments {
+    padding-top: 3rem;
+    border-top: 2px ridge var(--color-border);
+    margin-top: 2rem;
+  }
+
+  .experiment-card {
+    min-height: 10rem;
+    justify-content: center;
+  }
+
+  .experiment-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--color-hot-pink);
+    color: #fff;
+    border: 1px solid var(--color-hot-pink);
+    z-index: 2;
+  }
+
+  .requires {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-orange);
+    margin-bottom: 0.5rem;
   }
 </style>

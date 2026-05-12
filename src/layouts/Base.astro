@@ -1,4 +1,6 @@
 ---
+import Clippy from "../components/Clippy.astro";
+
 interface Props {
   title?: string;
   description?: string;
@@ -87,19 +89,12 @@ const currentYear = new Date().getFullYear();
         <span class="badge badge-256">256 Colors</span>
       </div>
 
-      <!--
-      <div class="visitor-counter">
-        You are visitor #<span>0</span><span>0</span><span>4</span><span>2</span><span>0</span><span>6</span>
-        since Jan 1, 2014
-      </div>
-
       <div class="badge-row" style="margin-top: 0.75rem;">
-        <a href="https://en.wikipedia.org/wiki/GeoCities" class="badge badge-webring">&#8592; Prev</a>
-        <span class="badge badge-webring">WebRing</span>
-        <a href="https://en.wikipedia.org/wiki/GeoCities" class="badge badge-webring">Next &#8594;</a>
+        <a href="/irc" class="badge badge-webring">💬 Join IRC Chat</a>
       </div>
-      -->
     </footer>
+
+    <Clippy />
   </body>
 </html>
 

@@ -1,0 +1,487 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Never-Ending Story — Chrome AI">
+  <div class="starfield">
+    <a href="/" class="exit-btn" title="Back to site">×</a>
+    <div class="exit-hint">Press ESC to exit</div>
+    <div class="intro">
+      <p>A long time ago in a browser far,<br>far away…</p>
+    </div>
+    <div class="logo">NEVER-ENDING STORY</div>
+    <div class="crawl-container">
+      <div id="story-text" class="crawl-text"></div>
+    </div>
+  </div>
+
+  <div id="status-box" class="status-panel">
+    <span id="status-text">Checking for Chrome built-in AI…</span>
+    <progress id="download-bar" value="0" max="100" hidden></progress>
+  </div>
+
+  <div id="fallback" class="status-panel" hidden>
+    <h2>Chrome Built-in AI not available</h2>
+    <p>This demo requires Chrome with the Prompt API enabled. To try it:</p>
+    <ol>
+      <li>Use Chrome on desktop (macOS 13+, Windows 10/11, or Linux)</li>
+      <li>Enable <code>chrome://flags/#optimization-guide-on-device-model</code></li>
+      <li>Enable <code>chrome://flags/#prompt-api-for-gemini-nano-multimodal-input</code></li>
+      <li>Relaunch Chrome</li>
+      <li>Join the <a href="https://developer.chrome.com/docs/ai/join-epp" target="_blank">Early Preview Program</a></li>
+    </ol>
+  </div>
+
+  <script is:inline>
+    (async () => {
+      const $ = (sel) => document.querySelector(sel);
+      const statusBox = $("#status-box");
+      const statusText = $("#status-text");
+      const downloadBar = $("#download-bar");
+      const fallback = $("#fallback");
+      const storyText = $("#story-text");
+
+      const RANDOM_OPENERS = [
+        "a curious robot named Beep who lives on the moon",
+        "a tiny dragon who is afraid of fire",
+        "a cloud that wants to visit the ocean",
+        "a friendly ghost who lives in a lighthouse",
+        "a squirrel who collects shiny things",
+        "a magical umbrella that takes you anywhere",
+        "a penguin who dreams of flying",
+        "a star that falls to Earth",
+        "a talking tree in an enchanted forest",
+        "a little boat that sails through the sky",
+        "a cat who thinks it's a dog",
+        "a mushroom that grows upside-down houses",
+        "a bedtime adventure in a land made of pillows",
+        "a pocket-sized elephant who lives in a garden",
+        "a moonbeam that gets lost and needs help finding home",
+      ];
+
+      let session = null;
+      let transcript = [];
+      let summaryCount = 0;
+      let isStreaming = false;
+      let autoContinueTimer = null;
+
+      const SYSTEM_PROMPT = `You are a warm, imaginative children's storyteller. Write in a gentle, age-appropriate style. Produce 2-4 short paragraphs at a time. End with a soft cliffhanger or an open question so the story can continue. Do not write a conclusion or "The End". Keep vocabulary simple and playful.`;
+
+      function setStatus(msg) {
+        statusText.textContent = msg;
+      }
+
+      async function checkAvailability() {
+        if (typeof LanguageModel === "undefined") return "unavailable";
+        try {
+          return await LanguageModel.availability({
+            expectedInputs: [{ type: "text", languages: ["en"] }],
+            expectedOutputs: [{ type: "text", languages: ["en"] }],
+          });
+        } catch (e) {
+          return "unavailable";
+        }
+      }
+
+      async function createSession(initialPrompts = []) {
+        const opts = {
+          expectedInputs: [{ type: "text", languages: ["en"] }],
+          expectedOutputs: [{ type: "text", languages: ["en"] }],
+        };
+        if (initialPrompts.length) {
+          opts.initialPrompts = initialPrompts;
+        }
+        if (!initialPrompts.find(p => p.role === "system")) {
+          opts.initialPrompts = [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...(opts.initialPrompts || []),
+          ];
+        }
+        return LanguageModel.create(opts);
+      }
+
+      function appendStory(html) {
+        const el = document.createElement("div");
+        el.className = "crawl-chunk";
+        el.innerHTML = html;
+        storyText.appendChild(el);
+      }
+
+      function scheduleAutoContinue(delayMs = 4000) {
+        clearTimeout(autoContinueTimer);
+        if (isStreaming) return;
+        autoContinueTimer = setTimeout(() => {
+          if (isStreaming) return;
+          if (Math.random() < 0.25) {
+            const twists = [
+              "Introduce a surprising new character.",
+              "The main character discovers something unexpected.",
+              "The weather suddenly changes dramatically.",
+              "Add a funny misunderstanding.",
+              "Something magical happens.",
+              "The main character meets someone from their past.",
+              "A door appears that wasn't there before.",
+              "The main character shrinks to the size of an ant.",
+              "Everything turns upside down.",
+              "The main character finds a mysterious map.",
+            ];
+            streamPrompt(twists[Math.floor(Math.random() * twists.length)]);
+          } else {
+            streamPrompt("Continue the story.");
+          }
+        }, delayMs);
+      }
+
+      async function streamPrompt(promptText) {
+        if (!session || isStreaming) return;
+        isStreaming = true;
+        transcript.push({ role: "user", content: promptText });
+
+        const chunkEl = document.createElement("div");
+        chunkEl.className = "crawl-chunk";
+        storyText.appendChild(chunkEl);
+
+        let full = "";
+        try {
+          const stream = await session.promptStreaming(promptText);
+          for await (const chunk of stream) {
+            full += chunk;
+            chunkEl.innerHTML = formatStory(escapeHtml(full));
+          }
+        } catch (e) {
+          chunkEl.innerHTML = `<span class="error">Error: ${escapeHtml(e.message)}</span>`;
+          isStreaming = false;
+          scheduleAutoContinue(6000);
+          return;
+        }
+
+        transcript.push({ role: "assistant", content: full });
+        isStreaming = false;
+
+        const usage = session.contextUsage ?? 0;
+        const windowSize = session.contextWindow ?? Infinity;
+        if (usage > windowSize * 0.75) {
+          await rotateContext();
+        }
+
+        scheduleAutoContinue(4000);
+      }
+
+      async function rotateContext() {
+        const summaryPrompt = `Please summarise the story so far in 3-4 sentences. Include the main characters, where they are, and what just happened. Another writer will use this to continue seamlessly.`;
+        let summary = "";
+        try {
+          const stream = await session.promptStreaming(summaryPrompt);
+          for await (const chunk of stream) summary += chunk;
+        } catch (e) {
+          summary = "The story continues…";
+        }
+
+        session.destroy();
+        summaryCount++;
+        transcript = [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: `Here is a summary of the story so far: ${summary}\n\nPlease continue the story from where it left off.` },
+          { role: "assistant", content: "Once upon a time…" },
+        ];
+        session = await createSession(transcript);
+        appendStory(`<div class="divider">✦ Summary #${summaryCount} ✦<br><small>${escapeHtml(summary)}</small></div>`);
+      }
+
+      function escapeHtml(str) {
+        return str.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+      }
+
+      function formatStory(text) {
+        return text.replace(/\n\n/g, "</p><p>").replace(/\n/g, "<br>").replace(/^/, "<p>").replace(/$/, "</p>").replace(/<p><\/p>/g, "");
+      }
+
+      // Init flow
+      const avail = await checkAvailability();
+      if (avail === "unavailable") {
+        statusBox.hidden = true;
+        fallback.hidden = false;
+        return;
+      }
+
+      setStatus(avail === "downloading" ? "Downloading model…" : "Model available. Initialising…");
+      downloadBar.hidden = false;
+
+      try {
+        session = await LanguageModel.create({
+          expectedInputs: [{ type: "text", languages: ["en"] }],
+          expectedOutputs: [{ type: "text", languages: ["en"] }],
+          monitor(m) {
+            m.addEventListener("downloadprogress", (e) => {
+              downloadBar.value = e.loaded * 100;
+            });
+          },
+          initialPrompts: [{ role: "system", content: SYSTEM_PROMPT }],
+        });
+      } catch (e) {
+        setStatus(`Error: ${e.message}`);
+        fallback.hidden = false;
+        return;
+      }
+
+      downloadBar.hidden = true;
+      statusBox.hidden = true;
+
+      // Auto-start with random opener
+      const opener = RANDOM_OPENERS[Math.floor(Math.random() * RANDOM_OPENERS.length)];
+      await streamPrompt(`Start a children's story about ${opener}.`);
+
+      // Exit handlers
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          window.location.href = "/";
+        }
+      });
+    })();
+  </script>
+
+  <style is:global>
+    .starfield {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+      perspective: 400px;
+    }
+
+    .exit-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 10;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sans);
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--color-border);
+      border-radius: 0;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .exit-btn:hover {
+      color: var(--color-yellow);
+      border-color: var(--color-yellow);
+      text-shadow: 0 0 8px #ffff0066;
+    }
+
+    .exit-hint {
+      position: fixed;
+      top: 1rem;
+      right: 4rem;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--color-border);
+      animation: hint-fade 8s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes hint-fade {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Fade the text into the distance at the top */
+    .starfield::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.7) 20%,
+        rgba(0, 0, 0, 0) 40%,
+        rgba(0, 0, 0, 0) 70%,
+        rgba(0, 0, 0, 0.8) 90%,
+        rgba(0, 0, 0, 1) 100%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .intro {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      text-align: center;
+      color: var(--color-cyan);
+      font-family: var(--font-sans);
+      font-size: 1.5rem;
+      line-height: 1.6;
+      opacity: 0;
+      animation: intro-fade 4s ease-out 0.5s forwards;
+      pointer-events: none;
+    }
+
+    .intro p {
+      margin: 0;
+    }
+
+    @keyframes intro-fade {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(2.5);
+      z-index: 3;
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--color-hot-pink);
+      text-shadow: 0 0 20px #ff00ff88;
+      text-align: center;
+      opacity: 0;
+      animation: logo-zoom 6s ease-out 5s forwards;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    @keyframes logo-zoom {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(2.5); }
+      10% { opacity: 1; }
+      90% { opacity: 1; transform: translate(-50%, -50%) scale(0.1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.05); }
+    }
+
+    .crawl-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      transform-origin: 50% 100%;
+      transform: rotateX(25deg) translateY(100%);
+      animation: crawl-scroll 60s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes crawl-scroll {
+      0% { transform: rotateX(25deg) translateY(80%); }
+      100% { transform: rotateX(25deg) translateY(-100%); }
+    }
+
+    .crawl-text {
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 0 2rem;
+      text-align: justify;
+      font-family: var(--font-sans);
+      font-size: 1.6rem;
+      line-height: 1.8;
+      color: var(--color-yellow);
+      text-shadow: 0 0 4px #ffff0088;
+    }
+
+    .crawl-text p {
+      margin-bottom: 1.5rem;
+    }
+
+    .crawl-chunk {
+      margin-bottom: 2rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .crawl-chunk p {
+      margin-bottom: 1.5rem;
+    }
+
+    .divider {
+      text-align: center;
+      color: var(--color-cyan);
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      padding: 1rem 0;
+      margin: 1rem 0 2rem;
+      border-top: 1px dashed var(--color-border);
+      border-bottom: 1px dashed var(--color-border);
+    }
+
+    .divider small {
+      color: var(--color-text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    .error {
+      color: var(--color-red);
+    }
+
+    .status-panel {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px ridge var(--color-border);
+      padding: 0.75rem 1.25rem;
+      color: var(--color-text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-align: center;
+      max-width: 32rem;
+    }
+
+    .status-panel h2 {
+      font-family: var(--font-display);
+      color: var(--color-hot-pink);
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .status-panel ol {
+      text-align: left;
+      padding-left: 1.25rem;
+      margin: 0;
+      font-size: 0.75rem;
+    }
+
+    .status-panel li {
+      margin-bottom: 0.25rem;
+    }
+
+    .status-panel code {
+      color: var(--color-accent);
+    }
+
+    .status-panel a {
+      color: var(--color-cyan);
+    }
+
+    progress {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</Base>
