@@ -7,7 +7,7 @@ import Base from "../layouts/Base.astro";
     <a href="/" class="exit-btn" title="Back to site">×</a>
     <div class="exit-hint">Press ESC to exit</div>
     <div class="intro">
-      <p>A long time ago in a browser far,<br>far away…</p>
+      <p>Open the tab, and begin the tale…</p>
     </div>
     <div class="logo">NEVER-ENDING STORY</div>
     <div class="crawl-container">
@@ -32,6 +32,11 @@ import Base from "../layouts/Base.astro";
     </ol>
   </div>
 
+  <div id="dna-badge" class="dna-badge" hidden>
+    <div class="dna-genre" id="dna-genre"></div>
+    <div class="dna-detail" id="dna-detail"></div>
+  </div>
+
   <script is:inline>
     (async () => {
       const $ = (sel) => document.querySelector(sel);
@@ -40,6 +45,9 @@ import Base from "../layouts/Base.astro";
       const downloadBar = $("#download-bar");
       const fallback = $("#fallback");
       const storyText = $("#story-text");
+      const dnaBadge = $("#dna-badge");
+      const dnaGenre = $("#dna-genre");
+      const dnaDetail = $("#dna-detail");
 
       const RANDOM_OPENERS = [
         "a curious robot named Beep who lives on the moon",
@@ -59,13 +67,125 @@ import Base from "../layouts/Base.astro";
         "a moonbeam that gets lost and needs help finding home",
       ];
 
+      const GENRES = {
+        wonder: {
+          name: "Wonder Tale",
+          prompt: "You are a warm, imaginative storyteller. Write in a gentle, wondrous style full of curiosity and small miracles. The world is strange and beautiful.",
+          theme: { bg: "#0a0a1a", textColor: "#ffd700", textShadow: "0 0 6px #ffd70066", accent: "#ff69b4", introColor: "#00ffff", font: "var(--font-sans)", crawlSpeed: "60s" }
+        },
+        noir: {
+          name: "Noir",
+          prompt: "You are a hard-boiled noir narrator. Cynical, world-weary, rich with metaphor and shadow. The city is a character. Rain is always possible.",
+          theme: { bg: "#0a0a0a", textColor: "#cccccc", textShadow: "0 0 4px #ffffff33", accent: "#ff3333", introColor: "#999999", font: "monospace", crawlSpeed: "90s" }
+        },
+        terminal: {
+          name: "Ship Log",
+          prompt: "You are a starship AI logging events. Clinical, precise, timestamped. But the data is becoming... inconsistent. Something is wrong with the sensors.",
+          theme: { bg: "#001100", textColor: "#00ff00", textShadow: "0 0 6px #00ff0066", accent: "#00aa00", introColor: "#00cc00", font: "monospace", crawlSpeed: "70s" }
+        },
+        fairy: {
+          name: "Fairy Tale",
+          prompt: "You are an old-world fairy tale narrator. Formal, slightly ominous, with moral undertones and thorns beneath the beauty. Nothing comes without a price.",
+          theme: { bg: "#1a1025", textColor: "#ffe4e1", textShadow: "0 0 6px #ffe4e166", accent: "#ffd700", introColor: "#dda0dd", font: "serif", crawlSpeed: "55s" }
+        },
+        horror: {
+          name: "Strange Accounts",
+          prompt: "You are documenting testimony of inexplicable events. Academic tone fraying into dread. Nothing is named directly. The reader should feel watched.",
+          theme: { bg: "#050505", textColor: "#cc4444", textShadow: "0 0 8px #cc444466", accent: "#ff0000", introColor: "#aa4444", font: "var(--font-sans)", crawlSpeed: "100s" }
+        },
+        western: {
+          name: "Frontier",
+          prompt: "You are an old-timer by a campfire. Sparse, gritty prose. Tall tales that might be true. The land is vast and unforgiving. Silence speaks.",
+          theme: { bg: "#1a1510", textColor: "#deb887", textShadow: "0 0 4px #deb88755", accent: "#cd853f", introColor: "#f4a460", font: "serif", crawlSpeed: "80s" }
+        }
+      };
+
+      const FRAMING_DEVICES = [
+        "The story is being told as a letter found in a bottle.",
+        "The story is being overheard in a quiet diner booth.",
+        "The story is a ship's AI reconstructing events from corrupted logs.",
+        "The story is being told by a grandparent who keeps forgetting and changing details.",
+        "The story is a court stenographer's transcript of a strange trial.",
+        "The story is a dream journal being written in real-time.",
+        "The story is entries from an explorer's field notebook.",
+        "The story is a radio broadcast from a station that shouldn't exist.",
+      ];
+
+      const SETTINGS = [
+        "a city that floats on clouds",
+        "an abandoned underwater mall",
+        "a forest where trees grow upside-down",
+        "a train that travels through time",
+        "a library that contains every unwritten book",
+        "a lighthouse at the edge of a frozen sea",
+        "a hotel where every room is a different year",
+        "a garden where the plants whisper secrets",
+      ];
+
+      const ARTIFACTS = [
+        "a rusted key that hums when held",
+        "a photograph that changes when you look away",
+        "a pocket watch that runs backwards",
+        "a map with no names, only smells",
+        "a mirror that shows tomorrow",
+        "a music box that plays songs not yet written",
+        "a pair of glasses that reveal hidden doors",
+        "a coin that always lands on its edge",
+      ];
+
+      const CONSTRAINTS = [
+        "No character may speak more than one sentence at a time.",
+        "Every paragraph must mention the weather or atmosphere.",
+        "Something must be lost or found in every scene.",
+        "Time moves differently for each character.",
+        "The story must never name the protagonist directly.",
+        "Every scene must contain a colour that was not in the previous scene.",
+      ];
+
+      const MOODS = ["hopeful", "melancholic", "absurd", "tense", "nostalgic", "eerie", "playful", "lonely"];
+      const NARRATORS = ["first-person", "close third-person", "unreliable narrator", "second-person", "epistolary"];
+
+      function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+      // Roll the Story DNA
+      const genreKey = pick(Object.keys(GENRES));
+      const genre = GENRES[genreKey];
+      const framing = pick(FRAMING_DEVICES);
+      const setting = pick(SETTINGS);
+      const artifact = pick(ARTIFACTS);
+      const constraint = pick(CONSTRAINTS);
+      const mood = pick(MOODS);
+      const narrator = pick(NARRATORS);
+
+      const SYSTEM_PROMPT = `${genre.prompt}
+
+${framing}
+The story is set in ${setting}. A significant object is ${artifact}.
+Narrative perspective: ${narrator}. Overall mood: ${mood}.
+Writing constraint: ${constraint}
+
+Produce 2-4 short paragraphs at a time. End with a soft cliffhanger or an open question so the story can continue. Do not write a conclusion or "The End".`;
+
+      // Apply visual theme
+      const root = document.documentElement;
+      const theme = genre.theme;
+      root.style.setProperty("--story-bg", theme.bg);
+      root.style.setProperty("--story-text-color", theme.textColor);
+      root.style.setProperty("--story-text-shadow", theme.textShadow);
+      root.style.setProperty("--story-accent", theme.accent);
+      root.style.setProperty("--story-intro-color", theme.introColor);
+      root.style.setProperty("--story-font", theme.font);
+      root.style.setProperty("--story-crawl-speed", theme.crawlSpeed);
+
+      // Update DNA badge
+      dnaGenre.textContent = genre.name;
+      dnaDetail.textContent = `${mood} · ${narrator}`;
+
       let session = null;
       let transcript = [];
       let summaryCount = 0;
       let isStreaming = false;
       let autoContinueTimer = null;
-
-      const SYSTEM_PROMPT = `You are a warm, imaginative children's storyteller. Write in a gentle, age-appropriate style. Produce 2-4 short paragraphs at a time. End with a soft cliffhanger or an open question so the story can continue. Do not write a conclusion or "The End". Keep vocabulary simple and playful.`;
 
       function setStatus(msg) {
         statusText.textContent = msg;
@@ -226,10 +346,11 @@ import Base from "../layouts/Base.astro";
 
       downloadBar.hidden = true;
       statusBox.hidden = true;
+      dnaBadge.hidden = false;
 
       // Auto-start with random opener
       const opener = RANDOM_OPENERS[Math.floor(Math.random() * RANDOM_OPENERS.length)];
-      await streamPrompt(`Start a children's story about ${opener}.`);
+      await streamPrompt(`Start a story about ${opener}.`);
 
       // Exit handlers
       document.addEventListener("keydown", (e) => {
@@ -245,7 +366,7 @@ import Base from "../layouts/Base.astro";
       position: fixed;
       inset: 0;
       overflow: hidden;
-      background: #000;
+      background: var(--story-bg, #000);
       perspective: 400px;
     }
 
@@ -272,8 +393,8 @@ import Base from "../layouts/Base.astro";
     }
 
     .exit-btn:hover {
-      color: var(--color-yellow);
-      border-color: var(--color-yellow);
+      color: var(--story-text-color, var(--color-yellow));
+      border-color: var(--story-text-color, var(--color-yellow));
       text-shadow: 0 0 8px #ffff0066;
     }
 
@@ -323,7 +444,7 @@ import Base from "../layouts/Base.astro";
       transform: translate(-50%, -50%);
       z-index: 3;
       text-align: center;
-      color: var(--color-cyan);
+      color: var(--story-intro-color, var(--color-cyan));
       font-family: var(--font-sans);
       font-size: 1.5rem;
       line-height: 1.6;
@@ -351,7 +472,7 @@ import Base from "../layouts/Base.astro";
       z-index: 3;
       font-family: var(--font-display);
       font-size: 2.5rem;
-      color: var(--color-hot-pink);
+      color: var(--story-accent, var(--color-hot-pink));
       text-shadow: 0 0 20px #ff00ff88;
       text-align: center;
       opacity: 0;
@@ -375,7 +496,7 @@ import Base from "../layouts/Base.astro";
       top: 0;
       transform-origin: 50% 100%;
       transform: rotateX(25deg) translateY(100%);
-      animation: crawl-scroll 60s linear infinite;
+      animation: crawl-scroll var(--story-crawl-speed, 60s) linear infinite;
       z-index: 1;
     }
 
@@ -389,11 +510,11 @@ import Base from "../layouts/Base.astro";
       margin: 0 auto;
       padding: 0 2rem;
       text-align: justify;
-      font-family: var(--font-sans);
+      font-family: var(--story-font, var(--font-sans));
       font-size: 1.6rem;
       line-height: 1.8;
-      color: var(--color-yellow);
-      text-shadow: 0 0 4px #ffff0088;
+      color: var(--story-text-color, var(--color-yellow));
+      text-shadow: var(--story-text-shadow, 0 0 4px #ffff0088);
     }
 
     .crawl-text p {
@@ -477,6 +598,32 @@ import Base from "../layouts/Base.astro";
     progress {
       width: 100%;
       margin-top: 0.5rem;
+    }
+
+    .dna-badge {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid var(--color-border);
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-text-secondary);
+      max-width: 16rem;
+      line-height: 1.4;
+    }
+
+    .dna-genre {
+      color: var(--story-accent, var(--color-hot-pink));
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dna-detail {
+      opacity: 0.8;
     }
 
     @keyframes fadeIn {

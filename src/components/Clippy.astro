@@ -1,4 +1,4 @@
-<div id="clippy-container" data-phase="hidden">
+<div id="clippy-container" data-phase="hidden" data-mood="neutral">
   <!-- Loading dot -->
   <div id="clippy-dot" class="clippy-dot" title="Loading..."></div>
 
@@ -23,10 +23,14 @@
             stroke-linecap="round"/>
       <!-- Left eye -->
       <ellipse cx="22" cy="14" rx="4" ry="5" fill="white"/>
-      <circle cx="23" cy="14" r="2" fill="black"/>
+      <g class="clippy-pupil">
+        <circle cx="23" cy="14" r="2" fill="black"/>
+      </g>
       <!-- Right eye -->
       <ellipse cx="38" cy="14" rx="4" ry="5" fill="white"/>
-      <circle cx="37" cy="14" r="2" fill="black"/>
+      <g class="clippy-pupil">
+        <circle cx="37" cy="14" r="2" fill="black"/>
+      </g>
     </svg>
   </div>
 
@@ -121,12 +125,24 @@
     animation: clippy-float 3s ease-in-out infinite;
   }
 
+  #clippy-container[data-phase="active"][data-mood="excited"] .clippy-character {
+    animation: clippy-float 1.5s ease-in-out infinite;
+  }
+
+  #clippy-container[data-phase="active"][data-mood="bored"] .clippy-character {
+    animation: clippy-float 5s ease-in-out infinite;
+    opacity: 0.85;
+  }
+
+  #clippy-container[data-phase="active"][data-mood="annoyed"] .clippy-character {
+    animation: clippy-sulk 2s ease forwards;
+  }
+
   #clippy-container[data-phase="dismissed"] .clippy-character {
     width: 24px;
     height: 48px;
     opacity: 0.6;
-    transform: scale(1);
-    animation: none;
+    animation: clippy-sulk 2s ease forwards;
   }
 
   #clippy-container[data-phase="dismissed"] .clippy-character:hover {
@@ -140,6 +156,20 @@
     75% { transform: translateY(-2px) rotate(-1deg); }
   }
 
+  @keyframes clippy-sulk {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-12deg) translateY(4px); }
+  }
+
+  @keyframes clippy-bounce {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+    50% { transform: translateY(-10px) scale(1.08) rotate(2deg); }
+  }
+
+  .clippy-character.clippy-bounce {
+    animation: clippy-bounce 0.3s ease !important;
+  }
+
   .clippy-svg {
     width: 100%;
     height: 100%;
@@ -149,6 +179,10 @@
 
   .clippy-character:hover .clippy-svg {
     color: var(--color-hot-pink);
+  }
+
+  .clippy-pupil {
+    transition: transform 0.1s ease-out;
   }
 
   /* Speech bubble */
