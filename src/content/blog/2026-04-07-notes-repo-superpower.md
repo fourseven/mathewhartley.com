@@ -4,7 +4,7 @@ date: 2026-04-07
 tags: AI, Claude Code, Engineering
 ---
 
-Tidied up Jul 1 after other AI thought-leaders have stumbled across this pattern too.
+*Tidied up Jul 1 after other AI thought-leaders have stumbled across this pattern too.*
 
 End of January, and I was staring at the same blank doc I'd stared at six months earlier - what did I actually do? Our reviews run twice a year, and every time I'd end up digging through git logs for commit messages like "fix tests" and "address review feedback", trying to reconstruct something that felt meaningful from outside my own head.
 
