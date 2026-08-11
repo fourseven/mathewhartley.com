@@ -5,9 +5,30 @@ import { getCollection } from "astro:content";
 const posts = (await getCollection("blog"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Mathew Hartley",
+  url: "https://www.mathewhartley.com",
+  jobTitle: "Staff Engineer",
+  description:
+    "Staff Engineer at Amp, previously CTO at Storypark. Builds with TypeScript, React, and data systems. Based in Wellington, New Zealand.",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Wellington",
+    addressCountry: "NZ",
+  },
+  sameAs: [
+    "https://www.linkedin.com/in/mathew-hartley",
+    "https://github.com/fourseven",
+    "https://bsky.app/profile/fourseven.bsky.social",
+    "https://twitter.com/four_seven",
+  ],
+};
 ---
 
-<Base title="MathewHartley.com">
+<Base title="MathewHartley.com" jsonLd={personJsonLd}>
   <div class="hero">
     <h1>&#127775; Mathew Hartley &#127775;</h1>
     <p class="tagline">Staff Engineer &middot; Ex-CTO &middot; Shopify/eCommerce</p>
