@@ -8,8 +8,6 @@ My degree is in electrical engineering. I mostly chose it because it sounded coo
 
 Arduinos were fun, but I was always time-poor and found the feedback loop slow. You'd carve out an evening, spend half of it re-learning the toolchain, another quarter debugging why the I2C addresses don't match the tutorial, and maybe get an LED to blink before bed. One stalled evening and the project goes back in the box.
 
-ESP32s are what those early Arduinos always wished they were: WiFi and BLE built in, dual core, under $10. You don't think twice about ordering five.
-
 But the real difference between now and five or ten years ago is that LLM coding tools exist. I'm comfortable working through an AI, and that changes the shape of what's viable when you're time-poor.
 
 ---
@@ -18,13 +16,13 @@ Last month I built a NeoPixel clock I'd stalled on for five years. The hardware 
 
 That unblocked something. I started poking around and found projects like RSVPNano and the Waveshare ESP devices: prototyping platforms with everything enclosed. Instead of needing to be mailed a whole suite of parts and waiting for the next delivery to continue, you just unbox and go. That shift alone makes a difference when your tinkering time comes in unpredictable thirty-minute chunks.
 
-I can say "read this sensor, post to a webhook when it's dry, deep sleep between readings" and get a working sketch in seconds. It's not a template I have to fill in. It's working code with error handling, ready to upload, and it remembers the pinout quirks I'd have to look up every single time. The ADC2 pins don't work during WiFi? The model knows. I don't have to learn it again.
+I saw Johannes Tscharn post about one of those little ESP32 S3 devices that are suddenly everywhere. Opus 5 wrote the renderer and sim in C to get the most out of it. That's the whole appeal in a single sentence: you pick up one of these prototype boxes, tell the LLM what you've got plugged in, and it finds the right pins and flashes it. No wiring, no waiting for delivery, no digging through forum threads to remember which GPIO does what. A 2.06in AMOLED ESP32 Waveshare device shows up, you plug it in, and you're making things happen on it within minutes.
 
 The iteration loop shrinks from "an evening" to "twenty minutes while the kids finish dinner." You spend your mental energy on what you want to build, not on remembering which website had the working BLE example.
 
 ---
 
-There seems to be a little renaissance happening in tech circles around these devices. It's really easy to ask a frontier model to write the firmware and have an okay-good time. The code writes itself, but you're still wiring real things in the physical world. You're still thinking about pull-up resistors and voltage dividers and why your sensor is returning nonsense at 3.3V. The hardware problems keep it grounded. The software problems mostly disappear.
+There seems to be a little renaissance happening in tech circles around these devices. It's really easy to ask a frontier model to write the firmware and have an okay-good time. And honestly, I'm just enjoying the prototype boxes at the moment. Everything's addressable, everything's enclosed. You don't need to wire anything. The hardware problem is solved by the form factor itself.
 
 I've also noticed my five-year-old is getting to the age where writing a prompt and seeing something happen in the real world is genuinely interesting to them. That's a whole other angle I hadn't considered when I blew the dust off that clock.
 
