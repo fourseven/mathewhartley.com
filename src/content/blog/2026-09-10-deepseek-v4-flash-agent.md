@@ -22,16 +22,16 @@ Suddenly it didn't feel excessive to run Hermes or similar, when prior to that i
 
 ---
 
-So the original question, "what could this do for staying organised", stopped being hypothetical. I run a general purpose agent (Hermes, on a tiny VM) against the boring parts of my week:
+The interesting part is probably how I use it? It's been a fun experiment, and I'm still finding the boundaries, but the best parts so far have been:
 
-- A morning brief before the kids are up: calendar, inbox, the feeds I'd otherwise scroll.
-- Email triage: label things, draft replies, flag the ones that actually need a human.
-- Repo chores: open PRs, CI state, backlog digests, without opening GitHub.
-- This blog: brain dump in, shaped draft out, slop scan, then I edit. This post went through that pipeline.
+- Giving it hypothesises for my algo-trading hobby, where it can do the backtests and tell me the outcomes
+- Pulling in interesting posts to come back to and feed into the early ideas I have bubbling away, art-styles for a esp32 companion, how people are using AI in their work that I could learn from
+- prodding me to write more on Twitter, Linkedin, My Blog, and helping me brainstorm and structure the writing.
+- A few morning briefs across the topics above
+- keeping my personal email inbox tidy
+- small changes to any repo in my github (headless, ask and it makes a PR)
 
-The list undersells it. The family history project that has stalled for years turns out to be perfect agent work: grinding through census records and shipping indexes for a surname, the kind of tedious-but-careful searching nobody actually enjoys. It runs my algotrading experiments overnight, pulling data and running backtests, then writing up what looked real versus what was noise, so I wake up to a summary instead of a terminal full of output. It trawls LinkedIn, Twitter, and a few dozen blogs for the interesting threads and folds the best ones into the morning brief, which has replaced most of my scrolling. And it nudges me when I haven't posted here in a while, usually pointing out I already half-wrote the post in my notes repo, which is annoying because it's right.
-
-None of that needs a genius model. It needs a cheap model that's genuinely good at tool use, which is exactly what DeepSeek re-post-trained 0731 for. The bigger change is mental: the agent stopped being something I rationed and became something I keep around.
+None of that needs a genius model. It needs a model that's good enough and that I trust enough that it's giving value, because like I said above, I've got no interest spending Opus or Sol prices to get the assists that it's able to provide.
 
 ---
 
