@@ -35,7 +35,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:<ROLE_NAME>
+          role-to-assume: arn:aws:iam::187504907144:role/github-deploy-mathewhartley
           aws-region: ap-southeast-2
           role-session-name: mathewhartley-deploy
 
