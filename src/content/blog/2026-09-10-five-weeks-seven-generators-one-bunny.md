@@ -4,7 +4,7 @@ date: 2026-09-10
 tags: AI, Experiments, Embedded
 ---
 
-Buddy is a small ESP32-S3 AI assistant. A few people on Twitter have been doing cool things with these, and I tried to replicate them without any luck. The sticking point turned out to be the face: a small creature character, plush-toy energy, that reads well on a little AMOLED screen. You'd think five weeks of AI tooling would make short work of a mascot.
+It's a small ESP32-S3 AI assistant. A few people on Twitter have been doing cool things with these, and I tried to replicate them without any luck. The sticking point turned out to be the face: a small creature character, plush-toy energy, that reads well on a little AMOLED screen. You'd think five weeks of AI tooling would make short work of a mascot.
 
 It took seven attempts across five approaches, and the only one that went smoothly was the one where I didn't let the model decide anything.
 
@@ -38,4 +38,4 @@ The final mesh is 600 faces. 298 vertices. A hand-sculpted grade of simple, prod
 
 The lesson I keep landing on: AI is a fast way to explore a style space and a slow way to land a look. The stuff that shipped was procedural, hand-ruled, and boring on purpose. The device face ended up being firmware-drawn lowpoly expressions, server-driven, and honestly that's the right answer for a screen this small.
 
-Next step is wiring the bunny face onto the buddy firmware and seeing how it reads on the actual device. That's the QA process that actually matters.
+Next step is wiring the bunny face onto the device firmware and seeing how it reads on the actual screen. That's the QA process that actually matters.
