@@ -29,7 +29,7 @@ Generally I prefer Nix packages for the obvious management benefits, but I have 
 - The Supabase and Doppler CLIs as Homebrew brews in `work.nix`. The nixpkgs Supabase CLI was behind the version our CI uses.
 - CodexBar, to keep an eye on usage limits. At my last role I used SwiftBar with a custom script to see Claude usage. I'm unlikely to use only Claude here, so this time I went for something open source that handles both.
 
-I restarted my `~/dw/notes` (dev work) folder: plain markdown, where every Claude Code session starts, with the monorepo and a clones directory added as extra working directories. The layout:
+I restarted my `~/dw/notes` (dev work) folder ([more on that pattern here](/blog/2026-04-07-notes-repo-superpower)): plain markdown, where every Claude Code session starts, with the monorepo and a clones directory added as extra working directories. The layout:
 
 - `context/`: things that stay true.
 - `projects/`: ongoing work.
