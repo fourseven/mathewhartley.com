@@ -2,6 +2,9 @@
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
 import { popularPosts } from "../lib/popular-posts";
+import { turnstileSiteKey } from "../lib/guestbook-config";
+
+const guestbookSiteKey = turnstileSiteKey(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY);
 
 const allPosts = await getCollection("blog");
 
@@ -84,25 +87,31 @@ const personJsonLd = {
     </ul>
   </div>
 
-  <script src="../client/guestbook.ts"></script>
   <section class="guestbook" aria-labelledby="guestbook-title">
     <h3 id="guestbook-title">&#128221; Guestbook</h3>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <p class="guestbook-note">Leave a note. Entries appear after I approve them.</p>
-    <form id="guestbook-form">
-      <label for="guestbook-name">Name</label>
-      <input id="guestbook-name" name="name" maxlength="40" required autocomplete="name" />
-      <label for="guestbook-message">Message</label>
-      <textarea id="guestbook-message" name="message" maxlength="500" rows="4" required></textarea>
-      <div class="guestbook-honeypot" aria-hidden="true">
-        <label for="guestbook-website">Leave this field blank</label>
-        <input id="guestbook-website" name="website" tabindex="-1" autocomplete="off" />
-      </div>
-      <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="dark"></div>
-      <button type="submit">Sign guestbook</button>
-      <p id="guestbook-status" role="status" aria-live="polite"></p>
-    </form>
-    <div id="guestbook-entries" class="guestbook-entries" aria-live="polite"></div>
+    {guestbookSiteKey ? (
+      <>
+        <script src="../client/guestbook.ts"></script>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        <p class="guestbook-note">Leave a note. Entries appear after I approve them.</p>
+        <form id="guestbook-form">
+          <label for="guestbook-name">Name</label>
+          <input id="guestbook-name" name="name" maxlength="40" required autocomplete="name" />
+          <label for="guestbook-message">Message</label>
+          <textarea id="guestbook-message" name="message" maxlength="500" rows="4" required></textarea>
+          <div class="guestbook-honeypot" aria-hidden="true">
+            <label for="guestbook-website">Leave this field blank</label>
+            <input id="guestbook-website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="cf-turnstile" data-sitekey={guestbookSiteKey} data-theme="dark"></div>
+          <button type="submit">Sign guestbook</button>
+          <p id="guestbook-status" role="status" aria-live="polite"></p>
+        </form>
+        <div id="guestbook-entries" class="guestbook-entries" aria-live="polite"></div>
+      </>
+    ) : (
+      <p class="guestbook-note">The guestbook is being set up. Check back shortly.</p>
+    )}
   </section>
 </Base>
 
