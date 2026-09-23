@@ -20,10 +20,6 @@ declare interface D1Database {
   };
 }
 
-declare interface PagesFunction<Environment = Record<string, unknown>> {
-  (context: { request: Request; env: Environment }): Promise<Response>;
-}
-
 declare module "node:assert" { export const strict: any; }
 declare module "node:fs" { export const existsSync: (...args: any[]) => boolean; }
 declare module "node:path" { export const resolve: (...args: string[]) => string; }
