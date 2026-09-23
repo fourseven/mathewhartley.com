@@ -1,4 +1,4 @@
-import { stripUnsafeControls, validateGuestbookInput } from "../../src/lib/guestbook-validation";
+import { stripUnsafeControls, validateGuestbookInput } from "./lib/guestbook-validation";
 
 interface D1Statement {
   bind(...values: (string | number)[]): D1Statement;
@@ -10,21 +10,60 @@ interface D1Database {
   prepare(query: string): D1Statement;
 }
 
+interface RateLimiter {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
+}
+
 interface Env {
   DB: D1Database;
   TURNSTILE_SECRET_KEY?: string;
   GUESTBOOK_ORIGIN?: string;
-  GUESTBOOK_RATE_LIMITER?: { limit: (options: { key: string }) => Promise<{ success: boolean }> };
-  GUESTBOOK_READ_LIMITER?: { limit: (options: { key: string }) => Promise<{ success: boolean }> };
+  GUESTBOOK_RATE_LIMITER?: RateLimiter;
+  GUESTBOOK_READ_LIMITER?: RateLimiter;
 }
 
-interface PagesContext {
-  request: Request;
-  env: Env;
+interface Entry {
+  id: number;
+  name: string;
+  message: string;
+  created_at: string;
 }
 
-interface PagesHandler {
-  (context: PagesContext): Promise<Response>;
+const jsonHeaders = {
+  "Content-Type": "application/json; charset=utf-8",
+  "Cache-Control": "no-store",
+  "X-Content-Type-Options": "nosniff",
+};
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
+}
+
+function clientKey(request: Request): string {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  return `guestbook:${ip}`;
+}
+
+async function rateLimitStatus(request: Request, limiter: RateLimiter | undefined): Promise<"limited" | "unavailable" | "allowed"> {
+  if (!limiter) return "unavailable";
+  try {
+    return (await limiter.limit({ key: clientKey(request) })).success ? "allowed" : "limited";
+  } catch {
+    return "unavailable";
+  }
+}
+
+function expectedOrigin(request: Request, env: Env): string {
+  return env.GUESTBOOK_ORIGIN || new URL(request.url).origin;
+}
+
+function allowedOrigin(request: Request, env: Env): boolean {
+  const origin = request.headers.get("Origin");
+  return !origin || origin === expectedOrigin(request, env);
+}
+
+function allowedPostOrigin(request: Request, env: Env): boolean {
+  return request.headers.get("Origin") === expectedOrigin(request, env);
 }
 
 async function readJsonLimited(request: Request): Promise<unknown> {
@@ -51,53 +90,6 @@ async function readJsonLimited(request: Request): Promise<unknown> {
     offset += chunk.byteLength;
   }
   return JSON.parse(new TextDecoder().decode(bytes));
-}
-
-function expectedOrigin(request: Request, env: Env): string {
-  return env.GUESTBOOK_ORIGIN || new URL(request.url).origin;
-}
-
-function allowedOrigin(request: Request, env: Env): boolean {
-  const origin = request.headers.get("Origin");
-  return !origin || origin === expectedOrigin(request, env);
-}
-
-function allowedPostOrigin(request: Request, env: Env): boolean {
-  return request.headers.get("Origin") === expectedOrigin(request, env);
-}
-
-interface Entry {
-  id: number;
-  name: string;
-  message: string;
-  created_at: string;
-}
-
-const jsonHeaders = {
-  "Content-Type": "application/json; charset=utf-8",
-  "Cache-Control": "no-store",
-  "X-Content-Type-Options": "nosniff",
-};
-
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
-}
-
-function clientKey(request: Request): string {
-  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  return `guestbook:${ip}`;
-}
-
-async function rateLimited(
-  request: Request,
-  limiter: Env["GUESTBOOK_RATE_LIMITER"] | Env["GUESTBOOK_READ_LIMITER"],
-): Promise<boolean> {
-  if (!limiter) return false;
-  try {
-    return !(await limiter.limit({ key: clientKey(request) })).success;
-  } catch {
-    return true;
-  }
 }
 
 async function verifyTurnstile(token: unknown, request: Request, env: Env): Promise<boolean> {
@@ -136,12 +128,11 @@ async function verifyTurnstile(token: unknown, request: Request, env: Env): Prom
   return result.success === true && result.hostname === hostname;
 }
 
-export const onRequestGet: PagesHandler = async ({ request, env }) => {
-  if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
+async function getGuestbook(request: Request, env: Env): Promise<Response> {
   if (!allowedOrigin(request, env)) return json({ error: "Origin not allowed." }, 403);
-  if (await rateLimited(request, env.GUESTBOOK_READ_LIMITER)) {
-    return json({ error: "Too many requests. Try again shortly." }, 429);
-  }
+  const rateStatus = await rateLimitStatus(request, env.GUESTBOOK_READ_LIMITER);
+  if (rateStatus === "unavailable") return json({ error: "Guestbook is temporarily unavailable." }, 503);
+  if (rateStatus === "limited") return json({ error: "Too many requests. Try again shortly." }, 429);
 
   try {
     const { results } = await env.DB.prepare(
@@ -151,17 +142,17 @@ export const onRequestGet: PagesHandler = async ({ request, env }) => {
   } catch {
     return json({ error: "Guestbook is temporarily unavailable." }, 503);
   }
-};
+}
 
-export const onRequestPost: PagesHandler = async ({ request, env }) => {
+async function postGuestbook(request: Request, env: Env): Promise<Response> {
   if (!allowedPostOrigin(request, env)) return json({ error: "Origin not allowed." }, 403);
   if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) {
     return json({ error: "Expected JSON." }, 415);
   }
 
-  if (await rateLimited(request, env.GUESTBOOK_RATE_LIMITER)) {
-    return json({ error: "Too many submissions. Try again later." }, 429);
-  }
+  const rateStatus = await rateLimitStatus(request, env.GUESTBOOK_RATE_LIMITER);
+  if (rateStatus === "unavailable") return json({ error: "Guestbook is temporarily unavailable." }, 503);
+  if (rateStatus === "limited") return json({ error: "Too many submissions. Try again later." }, 429);
 
   let input: unknown;
   try {
@@ -194,4 +185,24 @@ export const onRequestPost: PagesHandler = async ({ request, env }) => {
   } catch {
     return json({ error: "Guestbook is temporarily unavailable." }, 503);
   }
+}
+
+const notFound = () => json({ error: "Not found." }, 404);
+
+const worker = {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const { pathname } = new URL(request.url);
+    if (pathname !== "/api/guestbook" && pathname !== "/api/guestbook/") return notFound();
+
+    switch (request.method) {
+      case "GET":
+        return getGuestbook(request, env);
+      case "POST":
+        return postGuestbook(request, env);
+      default:
+        return json({ error: "Method not allowed." }, 405);
+    }
+  },
 };
+
+export default worker;
