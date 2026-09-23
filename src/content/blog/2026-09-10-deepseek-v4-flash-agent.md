@@ -25,7 +25,7 @@ Suddenly it didn't feel excessive to run Hermes or similar, when prior to that i
 The interesting part is probably how I use it? It's been a fun experiment, and I'm still finding the boundaries, but the best parts so far have been:
 
 - Giving it hypotheses for my algo-trading hobby, where it can do the backtests and tell me the outcomes
-- Pulling in interesting posts to come back to and feed into the early ideas I have bubbling away, art-styles for an ESP32 companion, how people are using AI in their work that I could learn from
+- Pulling in interesting posts to come back to and feed into the early ideas I have bubbling away, art-styles for [an ESP32 companion](/blog/2026-08-07-esp32-vibe-coding/), how people are using AI in their work that I could learn from
 - prodding me to write more on Twitter, LinkedIn, my blog, and helping me brainstorm and structure the writing.
 - A few morning briefs across the topics above
 - keeping my personal email inbox tidy

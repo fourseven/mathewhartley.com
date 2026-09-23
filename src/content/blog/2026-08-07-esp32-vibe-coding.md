@@ -12,7 +12,7 @@ But the real difference between now and five or ten years ago is that LLM coding
 
 ---
 
-Last month I re-picked up a NeoPixel clock I'd stalled on for five years. The hardware had survived one kid and one house move. I gave the project to an AI and it one-shotted the whole thing in ten minutes. The missing link turned out to be state management in C++ classes. Something I'd never wrapped my head around solo.
+Last month I re-picked up [a NeoPixel clock I'd stalled on for five years](/blog/2026-05-18-neopixel-clock/). The hardware had survived one kid and one house move. I gave the project to an AI and it one-shotted the whole thing in ten minutes. The missing link turned out to be state management in C++ classes. Something I'd never wrapped my head around solo.
 
 That unblocked something. I started poking around and found projects like [RSVPNano](https://github.com/ionutdecebal/rsvpnano) and the [Waveshare ESP devices](https://www.waveshare.com): prototyping platforms with everything enclosed. Instead of needing to be mailed a whole suite of parts and waiting for the next delivery to continue, you just unbox and go. That shift alone makes a difference when your tinkering time comes in unpredictable thirty-minute chunks.
 
