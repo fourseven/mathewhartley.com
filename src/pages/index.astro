@@ -1,10 +1,19 @@
 ---
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
+import { popularPosts } from "../lib/popular-posts";
 
-const posts = (await getCollection("blog"))
+const allPosts = await getCollection("blog");
+
+const posts = allPosts
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+
+const postsById = new Map(allPosts.map((post) => [post.id, post]));
+
+const popular = popularPosts
+  .map((id) => postsById.get(id))
+  .filter((post): post is NonNullable<typeof post> => Boolean(post));
 
 const personJsonLd = {
   "@context": "https://schema.org",
@@ -53,6 +62,16 @@ const personJsonLd = {
       </div>
     ))}
     <p class="more-link"><a href="/blog">Read more &rarr;</a></p>
+  </div>
+
+  <div class="popular-posts">
+    <h2>&#128293; Popular Posts</h2>
+    {popular.map((post) => (
+      <div class="post-teaser">
+        <span class="post-date">{post.data.date.toLocaleDateString("en-NZ", { year: "numeric", month: "short", day: "numeric" })}</span>
+        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+      </div>
+    ))}
   </div>
 
   <div class="sidebar-box">
@@ -138,6 +157,19 @@ const personJsonLd = {
   .latest-posts h2 {
     font-family: "Comic Sans MS", "Comic Sans", cursive;
     color: var(--neon-pink);
+    margin-top: 0;
+  }
+
+  .popular-posts {
+    background: var(--dark-bg);
+    border: 3px ridge var(--border-color);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .popular-posts h2 {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    color: var(--neon-green);
     margin-top: 0;
   }
 
