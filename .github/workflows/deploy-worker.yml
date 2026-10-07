@@ -1,0 +1,40 @@
+name: Deploy guestbook Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/worker.ts
+      - src/lib/**
+      - wrangler.toml
+      - .github/workflows/deploy-worker.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Test
+        run: npm test
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          wranglerVersion: "4.148.0"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 492bff31e4b99071c3a0c8ff8b4e3e49
