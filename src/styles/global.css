@@ -715,6 +715,58 @@ hr.star-divider::after {
   font-size: 1rem;
 }
 
+.guestbook-note,
+#guestbook-status,
+.guestbook-empty {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+#guestbook-form {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+  max-width: 34rem;
+}
+
+#guestbook-form label {
+  color: var(--color-cyan);
+  font-size: 0.85rem;
+}
+
+#guestbook-form input,
+#guestbook-form textarea {
+  width: 100%;
+  padding: 0.55rem;
+  color: var(--color-text-bright);
+  background: #05051a;
+  border: 2px inset var(--color-border);
+  font: inherit;
+}
+
+#guestbook-form textarea { resize: vertical; }
+
+#guestbook-form button {
+  justify-self: start;
+  padding: 0.4rem 0.8rem;
+  color: #000;
+  background: var(--color-accent);
+  border: 2px outset #aaffaa;
+  font: inherit;
+  cursor: pointer;
+}
+
+#guestbook-form button:disabled { opacity: 0.6; cursor: wait; }
+
+.guestbook-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .guestbook-entries {
   font-family: var(--font-mono);
   font-size: 0.8rem;
