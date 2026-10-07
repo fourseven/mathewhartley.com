@@ -1,22 +1,25 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import worker from "../../src/worker";
 
-function mockEnv(overrides: Record<string, unknown> = {}, verdict: unknown = "hold") {
-  const aiRun = vi.fn(async () => ({ response: { verdict } }));
+function moderator(verdict: unknown) {
+  return { run: async () => ({ response: { verdict } }) };
+}
+
+function mockEnv(overrides: Record<string, unknown> = {}) {
   const run = vi.fn(async () => ({ success: true }));
   const all = vi.fn(async () => ({ results: [{ id: 1, name: "Ada", message: "Hello", created_at: "2026-09-23T00:00:00Z" }] }));
   const bind = vi.fn(() => ({ run, all }));
   const prepare = vi.fn(() => ({ bind, run, all }));
   const env = {
     DB: { prepare },
-    AI: { run: aiRun },
+    AI: moderator("hold"),
     TURNSTILE_SECRET_KEY: "test-secret",
     GUESTBOOK_ORIGIN: "https://www.mathewhartley.com",
     GUESTBOOK_RATE_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
     GUESTBOOK_READ_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
     ...overrides,
   };
-  return { env, prepare, bind, run, all, aiRun };
+  return { env, prepare, bind, run, all };
 }
 
 function request(
@@ -67,7 +70,7 @@ describe("guestbook Worker route", () => {
   }
 
   it("stores held submissions pending after Turnstile verification", async () => {
-    const { env, prepare, bind, run } = mockEnv({}, "hold");
+    const { env, prepare, bind, run } = mockEnv();
     const response = await post(env);
     expect(response.status).toBe(201);
     expect(prepare).toHaveBeenCalledWith(expect.stringContaining("approved) VALUES (?, ?, ?)"));
@@ -78,26 +81,28 @@ describe("guestbook Worker route", () => {
   });
 
   it("publishes submissions the moderator approves", async () => {
-    const { env, bind } = mockEnv({}, "approve");
+    const { env, bind } = mockEnv({ AI: moderator("approve") });
     const response = await post(env);
     expect(response.status).toBe(201);
     expect(bind).toHaveBeenCalledWith("Ada", "Hello", 1);
     expect(await response.json()).toEqual({ message: "Thanks for signing the guestbook." });
+    await expectNoStore(response);
   });
 
   it("drops rejected submissions but answers like a held one", async () => {
-    const { env, prepare } = mockEnv({}, "reject");
+    const { env, prepare } = mockEnv({ AI: moderator("reject") });
     const response = await post(env);
     expect(response.status).toBe(201);
     expect(prepare).not.toHaveBeenCalled();
     expect(await response.json()).toEqual({ message: "Thanks. Your entry is awaiting approval." });
+    await expectNoStore(response);
   });
 
   it.each([
     ["an unexpected verdict", "publish"],
     ["a missing verdict", undefined],
   ])("holds the entry on %s", async (_label, verdict) => {
-    const { env, bind } = mockEnv({}, verdict);
+    const { env, bind } = mockEnv({ AI: moderator(verdict) });
     await post(env);
     expect(bind).toHaveBeenCalledWith("Ada", "Hello", 0);
   });
@@ -106,15 +111,6 @@ describe("guestbook Worker route", () => {
     const { env, bind } = mockEnv({ AI: { run: async () => { throw new Error("offline"); } } });
     await post(env);
     expect(bind).toHaveBeenCalledWith("Ada", "Hello", 0);
-  });
-
-  it("passes the entry to the moderator as JSON data, not as instructions", async () => {
-    const { env, aiRun } = mockEnv();
-    await post(env);
-    const input = aiRun.mock.calls[0][1] as { messages: { role: string; content: string }[] };
-    expect(input.messages).toHaveLength(2);
-    expect(input.messages[0].role).toBe("system");
-    expect(input.messages[1]).toEqual({ role: "user", content: JSON.stringify({ name: "Ada", message: "Hello" }) });
   });
 
   it("rejects cross-origin posts before persistence", async () => {

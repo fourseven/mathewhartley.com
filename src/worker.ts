@@ -133,7 +133,10 @@ async function verifyTurnstile(token: unknown, request: Request, env: Env): Prom
   return result.success === true && result.hostname === hostname;
 }
 
-type Verdict = "approve" | "hold" | "reject";
+const VERDICTS = ["approve", "hold", "reject"] as const;
+type Verdict = (typeof VERDICTS)[number];
+
+const AWAITING_APPROVAL = "Thanks. Your entry is awaiting approval.";
 
 const MODERATION_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
@@ -155,14 +158,13 @@ async function moderate(env: Env, name: string, message: string): Promise<Verdic
         type: "json_schema",
         json_schema: {
           type: "object",
-          properties: { verdict: { type: "string", enum: ["approve", "hold", "reject"] } },
+          properties: { verdict: { type: "string", enum: VERDICTS } },
           required: ["verdict"],
         },
       },
     });
-    const parsed = typeof response === "string" ? JSON.parse(response) : response;
-    const verdict = (parsed as { verdict?: unknown } | undefined)?.verdict;
-    return verdict === "approve" || verdict === "reject" ? verdict : "hold";
+    const verdict = response && typeof response === "object" && "verdict" in response ? response.verdict : undefined;
+    return VERDICTS.find((known) => known === verdict) ?? "hold";
   } catch {
     return "hold";
   }
@@ -219,16 +221,13 @@ async function postGuestbook(request: Request, env: Env): Promise<Response> {
 
   // Rejected entries get the same reply as held ones, so spammers can't probe the moderator.
   const verdict = await moderate(env, validation.name, validation.message);
-  if (verdict === "reject") return json({ message: "Thanks. Your entry is awaiting approval." }, 201);
+  if (verdict === "reject") return json({ message: AWAITING_APPROVAL }, 201);
 
   try {
     await env.DB.prepare(
       "INSERT INTO guestbook_entries (name, message, approved) VALUES (?, ?, ?)",
     ).bind(validation.name, validation.message, verdict === "approve" ? 1 : 0).run();
-    return json(
-      { message: verdict === "approve" ? "Thanks for signing the guestbook." : "Thanks. Your entry is awaiting approval." },
-      201,
-    );
+    return json({ message: verdict === "approve" ? "Thanks for signing the guestbook." : AWAITING_APPROVAL }, 201);
   } catch {
     return json({ error: "Guestbook is temporarily unavailable." }, 503);
   }
