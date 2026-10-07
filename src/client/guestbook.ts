@@ -87,6 +87,7 @@ form?.addEventListener("submit", async (event) => {
     form.reset();
     window.turnstile?.reset();
     statusEl.textContent = result.message || "Thanks. Your entry is awaiting approval.";
+    void loadEntries();
   } catch (error) {
     statusEl.textContent = error instanceof Error ? error.message : "Could not submit your note.";
     window.turnstile?.reset();

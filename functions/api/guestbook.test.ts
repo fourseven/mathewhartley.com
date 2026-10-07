@@ -1,20 +1,22 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import worker from "../../src/worker";
 
-function mockEnv(overrides: Record<string, unknown> = {}) {
+function mockEnv(overrides: Record<string, unknown> = {}, verdict: unknown = "hold") {
+  const aiRun = vi.fn(async () => ({ response: { verdict } }));
   const run = vi.fn(async () => ({ success: true }));
   const all = vi.fn(async () => ({ results: [{ id: 1, name: "Ada", message: "Hello", created_at: "2026-09-23T00:00:00Z" }] }));
   const bind = vi.fn(() => ({ run, all }));
   const prepare = vi.fn(() => ({ bind, run, all }));
   const env = {
     DB: { prepare },
+    AI: { run: aiRun },
     TURNSTILE_SECRET_KEY: "test-secret",
     GUESTBOOK_ORIGIN: "https://www.mathewhartley.com",
     GUESTBOOK_RATE_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
     GUESTBOOK_READ_LIMITER: { limit: vi.fn(async () => ({ success: true })) },
     ...overrides,
   };
-  return { env, prepare, bind, run, all };
+  return { env, prepare, bind, run, all, aiRun };
 }
 
 function request(
@@ -57,17 +59,62 @@ describe("guestbook Worker route", () => {
     await expectNoStore(second);
   });
 
-  it("stores submissions pending after Turnstile verification", async () => {
+  function post(env: Record<string, unknown>) {
     vi.stubGlobal("fetch", vi.fn(async () => Response.json({ success: true, hostname: "www.mathewhartley.com" })));
-    const { env, prepare, bind, run } = mockEnv();
-    const response = await handle(request("POST", "/api/guestbook", {
+    return handle(request("POST", "/api/guestbook", {
       name: " Ada ", message: " Hello ", website: "", turnstileToken: "valid-token",
     }), env);
+  }
+
+  it("stores held submissions pending after Turnstile verification", async () => {
+    const { env, prepare, bind, run } = mockEnv({}, "hold");
+    const response = await post(env);
     expect(response.status).toBe(201);
-    expect(prepare).toHaveBeenCalledWith(expect.stringContaining("approved) VALUES (?, ?, 0)"));
-    expect(bind).toHaveBeenCalledWith("Ada", "Hello");
+    expect(prepare).toHaveBeenCalledWith(expect.stringContaining("approved) VALUES (?, ?, ?)"));
+    expect(bind).toHaveBeenCalledWith("Ada", "Hello", 0);
     expect(run).toHaveBeenCalledOnce();
+    expect(await response.json()).toEqual({ message: "Thanks. Your entry is awaiting approval." });
     await expectNoStore(response);
+  });
+
+  it("publishes submissions the moderator approves", async () => {
+    const { env, bind } = mockEnv({}, "approve");
+    const response = await post(env);
+    expect(response.status).toBe(201);
+    expect(bind).toHaveBeenCalledWith("Ada", "Hello", 1);
+    expect(await response.json()).toEqual({ message: "Thanks for signing the guestbook." });
+  });
+
+  it("drops rejected submissions but answers like a held one", async () => {
+    const { env, prepare } = mockEnv({}, "reject");
+    const response = await post(env);
+    expect(response.status).toBe(201);
+    expect(prepare).not.toHaveBeenCalled();
+    expect(await response.json()).toEqual({ message: "Thanks. Your entry is awaiting approval." });
+  });
+
+  it.each([
+    ["an unexpected verdict", "publish"],
+    ["a missing verdict", undefined],
+  ])("holds the entry on %s", async (_label, verdict) => {
+    const { env, bind } = mockEnv({}, verdict);
+    await post(env);
+    expect(bind).toHaveBeenCalledWith("Ada", "Hello", 0);
+  });
+
+  it("holds the entry when Workers AI fails", async () => {
+    const { env, bind } = mockEnv({ AI: { run: async () => { throw new Error("offline"); } } });
+    await post(env);
+    expect(bind).toHaveBeenCalledWith("Ada", "Hello", 0);
+  });
+
+  it("passes the entry to the moderator as JSON data, not as instructions", async () => {
+    const { env, aiRun } = mockEnv();
+    await post(env);
+    const input = aiRun.mock.calls[0][1] as { messages: { role: string; content: string }[] };
+    expect(input.messages).toHaveLength(2);
+    expect(input.messages[0].role).toBe("system");
+    expect(input.messages[1]).toEqual({ role: "user", content: JSON.stringify({ name: "Ada", message: "Hello" }) });
   });
 
   it("rejects cross-origin posts before persistence", async () => {
