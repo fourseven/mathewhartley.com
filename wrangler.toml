@@ -14,7 +14,7 @@ zone_name = "mathewhartley.com"
 [[d1_databases]]
 binding = "DB"
 database_name = "guestbook"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "e3f48a67-aa08-467d-90cf-2f6003449f97"
 migrations_dir = "migrations"
 
 [[ratelimits]]
