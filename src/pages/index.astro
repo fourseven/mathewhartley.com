@@ -102,14 +102,14 @@ const personJsonLd = {
           <p class="guestbook-note">New notes appear after approval.</p>
           <form id="guestbook-form" aria-labelledby="guestbook-form-title">
             <div class="guestbook-fields">
-              <label class="guestbook-field" for="guestbook-name">
-                <span>Name</span>
+              <div class="guestbook-field">
+                <label for="guestbook-name">Name</label>
                 <input id="guestbook-name" name="name" maxlength="40" required autocomplete="name" />
-              </label>
-              <label class="guestbook-field" for="guestbook-message">
-                <span>Message</span>
+              </div>
+              <div class="guestbook-field guestbook-field--message">
+                <label for="guestbook-message">Message</label>
                 <textarea id="guestbook-message" name="message" maxlength="500" rows="3" required></textarea>
-              </label>
+              </div>
             </div>
             <div class="guestbook-honeypot" aria-hidden="true">
               <label for="guestbook-website">Leave this field blank</label>
@@ -293,6 +293,12 @@ const personJsonLd = {
     min-height: 5.25rem;
   }
 
+  #guestbook-form input:focus-visible,
+  #guestbook-form textarea:focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 2px;
+  }
+
   .guestbook-actions {
     display: flex;
     flex-wrap: wrap;
@@ -304,10 +310,4 @@ const personJsonLd = {
     margin: 0;
   }
 
-  @media (min-width: 36rem) {
-    .guestbook-fields {
-      grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 1.3fr);
-      align-items: start;
-    }
-  }
 </style>
