@@ -2,6 +2,8 @@
 title: Korg Monotribe & Miditribe IO
 date: 2014-01-05
 tags: MIDI, Music, Review, Electronics
+description: First impressions of the Korg Monotribe synth and drum machine, followed by a review of the plug-and-play Miditribe I/O MIDI interface.
+image: ./2014-01-05-monotribe-miditribe-io/monotribe.jpg
 ---
 #### Introduction
 

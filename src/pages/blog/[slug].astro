@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
 import { getCollection, render } from "astro:content";
+import { getImage } from "astro:assets";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -14,6 +15,10 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const tags = post.data.tags.split(",").map((t: string) => t.trim());
 const postUrl = new URL(`/blog/${post.id}`, Astro.site).href;
+const articleImage = post.data.image
+  ? await getImage({ src: post.data.image, width: 1200, format: "jpeg", quality: 85 })
+  : undefined;
+const articleImageUrl = articleImage ? new URL(articleImage.src, Astro.site).href : undefined;
 const postSummary = post.body
   .replace(/```[\s\S]*?```/g, " ")
   .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
@@ -31,13 +36,16 @@ const summary = sentences.reduce((selected, sentence) => {
 const description = summary || (postSummary.length > 160
   ? `${postSummary.slice(0, 157).replace(/\s+\S*$/, "").trimEnd()}...`
   : postSummary) || post.data.title;
+const pageDescription = post.data.description ?? description;
 
 const blogPostingJsonLd = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   headline: post.data.title,
+  description: pageDescription,
   datePublished: post.data.date.toISOString(),
   dateModified: post.data.date.toISOString(),
+  ...(articleImageUrl ? { image: articleImageUrl } : {}),
   author: {
     "@type": "Person",
     name: "Mathew Hartley",
@@ -59,7 +67,7 @@ const blogPostingJsonLd = {
 
 <Base
   title={`${post.data.title} - MathewHartley.com`}
-  description={description}
+  description={pageDescription}
   ogType="article"
   jsonLd={blogPostingJsonLd}>
   <article class="article">
