@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Mathew Hartley, Senior Product Engineer</title>
+  <desc id="desc">A retro-futurist social preview for Mathew Hartley's website, featuring AI agents, engineering, and Wellington, New Zealand.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#080b22"/>
+      <stop offset="0.6" stop-color="#111238"/>
+      <stop offset="1" stop-color="#211238"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="47%" r="52%">
+      <stop offset="0" stop-color="#804cff" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#804cff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="stars" width="72" height="72" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="13" r="1.2" fill="#d8e8ff" opacity="0.65"/>
+      <circle cx="51" cy="28" r="1" fill="#24d8ff" opacity="0.5"/>
+      <circle cx="32" cy="61" r="1.1" fill="#ff70dc" opacity="0.48"/>
+    </pattern>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3de7f5"/>
+      <stop offset="1" stop-color="#ff70dc"/>
+    </linearGradient>
+    <filter id="soft-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <rect width="1200" height="630" fill="url(#stars)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="28" y="28" width="1144" height="574" rx="22" fill="none" stroke="#6875bb" stroke-opacity="0.55" stroke-width="2"/>
+  <path d="M56 94h380" stroke="url(#accent)" stroke-width="3"/>
+  <text x="68" y="78" fill="#6feeff" font-family="monospace" font-size="19" letter-spacing="3">MATHEWHARTLEY.COM</text>
+  <text x="1130" y="78" text-anchor="end" fill="#aab2d8" font-family="monospace" font-size="15" letter-spacing="1.5">NOTES · PROJECTS · EXPERIMENTS</text>
+
+  <text x="68" y="238" fill="#fff8da" font-family="Arial, Helvetica, sans-serif" font-size="86" font-weight="700" letter-spacing="-3">Mathew Hartley</text>
+  <text x="72" y="302" fill="#54e8f4" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="600">Senior Product Engineer</text>
+  <text x="72" y="356" fill="#d1d6f2" font-family="Arial, Helvetica, sans-serif" font-size="25">Building AI agents at Grw</text>
+
+  <g transform="translate(790 148)">
+    <circle cx="168" cy="145" r="122" fill="#291d53" fill-opacity="0.65" stroke="#4b4d90" stroke-width="2"/>
+    <circle cx="168" cy="145" r="87" fill="none" stroke="#3de7f5" stroke-opacity="0.75" stroke-width="2"/>
+    <ellipse cx="168" cy="145" rx="122" ry="42" transform="rotate(-28 168 145)" fill="none" stroke="#ff70dc" stroke-opacity="0.8" stroke-width="3"/>
+    <ellipse cx="168" cy="145" rx="122" ry="42" transform="rotate(28 168 145)" fill="none" stroke="#6a6eff" stroke-opacity="0.75" stroke-width="2"/>
+    <circle cx="168" cy="145" r="17" fill="#ffe765" filter="url(#soft-glow)"/>
+    <circle cx="278" cy="89" r="6" fill="#3de7f5"/>
+    <circle cx="71" cy="210" r="5" fill="#ff70dc"/>
+  </g>
+
+  <rect x="68" y="454" width="1064" height="1.5" fill="#7781bb" fill-opacity="0.5"/>
+  <text x="72" y="510" fill="#ffe765" font-family="monospace" font-size="18" letter-spacing="2">ENGINEERING  /  AI AGENTS  /  THINGS I BUILD</text>
+  <text x="1128" y="510" text-anchor="end" fill="#bfc6e8" font-family="monospace" font-size="18">WELLINGTON, NEW ZEALAND</text>
+  <path d="M68 550h14v14H68z" fill="#ff70dc"/>
+  <path d="M90 557h180" stroke="#3de7f5" stroke-width="2"/>
+  <text x="1128" y="565" text-anchor="end" fill="#6feeff" font-family="monospace" font-size="15" letter-spacing="1.5">A PERSONAL SITE BY MATHEW HARTLEY</text>
+</svg>
