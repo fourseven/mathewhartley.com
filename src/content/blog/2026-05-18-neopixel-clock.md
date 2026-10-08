@@ -2,6 +2,8 @@
 title: Building a clock I stalled on for five years, with an AI assistant
 date: 2026-05-18
 tags: Arduino, Embedded, AI
+description: An AI coding assistant helps finish a five-year-stalled NeoPixel clock, revealing that state management in C++ was the missing piece.
+image: ./2026-05-18-neopixel-clock/neopixel-clock.jpeg
 ---
 
 Those who've known me for a while know I essentially have an electrical engineering degree, and one of my hobbies about ten years ago was playing with Arduinos and microcontrollers. I've always wanted to build a clock with a NeoPixel ring, sitting on the wall, gently glowing with a couple of different changeable presets, but I never managed to get it over the line. The hardware has been in a box for at least one child's life and one house move.

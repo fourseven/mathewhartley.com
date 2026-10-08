@@ -2,6 +2,7 @@
 title: "Two days in: how I set up my laptop for a new job"
 date: 2026-09-15
 tags: AI, Claude Code, Nix, Engineering
+description: A practical guide to setting up a new engineering laptop with Nix, separating work and personal tools, and adding software only as the role needs it.
 ---
 
 I've been at a new role since Monday, two days and counting. It also meant a new laptop (my prior role was on a personal one), so I figured I should think in advance about how I want to work in Sept 2026. I'm starting slow on purpose, adding things as the work needs them so I can absorb each change.

@@ -2,6 +2,7 @@
 title: ESP32s, vibe coding, and the interesting threads around embedded software
 date: 2026-08-07
 tags: Embedded, AI, Arduino, Experiments
+description: AI coding tools make ESP32 projects easier to start, shrinking firmware iteration from an evening to minutes and leaving more time to build.
 ---
 
 My degree is in electrical engineering. I mostly chose it because it sounded cooler than "software engineer" at the time, and liked working with electronics as much as I liked software.

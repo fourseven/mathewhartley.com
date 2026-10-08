@@ -2,6 +2,7 @@
 title: Everyone's talking about Astra. I'm running DeepSeek V4 Flash.
 date: 2026-09-10
 tags: AI, Agents, Experiments
+description: A hands-on experiment with DeepSeek V4 Flash and other low-cost models for everyday agentic workflows, testing what is useful without constant oversight.
 ---
 
 There's a lot of talk about what Astra and the latest Fable (5.1) can do, and it's impressive, but I'm having more fun watching the fight on the flash scale, the cheaper (mostly) Chinese open weights, like GLM and DeepSeek Flash.
