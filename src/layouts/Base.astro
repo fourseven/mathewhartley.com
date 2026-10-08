@@ -5,14 +5,16 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
   ogType?: "website" | "article";
   jsonLd?: object;
 }
 
 const {
-  title = "MathewHartley.com",
-  description = "Blog and works by Mathew Hartley",
-  ogImage,
+  title = "Mathew Hartley | Senior Product Engineer",
+  description = "Senior Product Engineer at Grw, building AI agents. Engineering notes and projects from Wellington, New Zealand.",
+  ogImage = "/social-preview.png",
+  ogImageAlt = "Mathew Hartley, Senior Product Engineer at Grw, in Wellington, New Zealand",
   ogType = "website",
   jsonLd,
 } = Astro.props;
@@ -42,12 +44,14 @@ const ogImageUrl = ogImage
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content="MathewHartley.com" />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta property="og:image:alt" content={ogImageAlt} />}
 
     <!-- Twitter -->
     <meta name="twitter:card" content={ogImageUrl ? "summary_large_image" : "summary"} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
     <!-- Structured data -->
     {jsonLd && (

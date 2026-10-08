@@ -14,6 +14,23 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const tags = post.data.tags.split(",").map((t: string) => t.trim());
 const postUrl = new URL(`/blog/${post.id}`, Astro.site).href;
+const postSummary = post.body
+  .replace(/```[\s\S]*?```/g, " ")
+  .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+  .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+  .replace(/<[^>]*>/g, " ")
+  .replace(/^#{1,6}\s+/gm, "")
+  .replace(/[*_`~>]/g, " ")
+  .replace(/\s+/g, " ")
+  .trim();
+const sentences = postSummary.match(/[^.!?]+(?:[.!?]|$)/g) ?? [];
+const summary = sentences.reduce((selected, sentence) => {
+  const next = [selected, sentence.trim()].filter(Boolean).join(" ");
+  return next.length <= 160 ? next : selected;
+}, "");
+const description = summary || (postSummary.length > 160
+  ? `${postSummary.slice(0, 157).replace(/\s+\S*$/, "").trimEnd()}...`
+  : postSummary) || post.data.title;
 
 const blogPostingJsonLd = {
   "@context": "https://schema.org",
@@ -42,7 +59,7 @@ const blogPostingJsonLd = {
 
 <Base
   title={`${post.data.title} - MathewHartley.com`}
-  description={post.data.title}
+  description={description}
   ogType="article"
   jsonLd={blogPostingJsonLd}>
   <article class="article">
