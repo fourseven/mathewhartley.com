@@ -93,21 +93,35 @@ const personJsonLd = {
       <>
         <script src="../client/guestbook.ts"></script>
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-        <p class="guestbook-note">Leave a note. Entries appear after I approve them.</p>
-        <form id="guestbook-form">
-          <label for="guestbook-name">Name</label>
-          <input id="guestbook-name" name="name" maxlength="40" required autocomplete="name" />
-          <label for="guestbook-message">Message</label>
-          <textarea id="guestbook-message" name="message" maxlength="500" rows="4" required></textarea>
-          <div class="guestbook-honeypot" aria-hidden="true">
-            <label for="guestbook-website">Leave this field blank</label>
-            <input id="guestbook-website" name="website" tabindex="-1" autocomplete="off" />
-          </div>
-          <div class="cf-turnstile" data-sitekey={guestbookSiteKey} data-theme="dark"></div>
-          <button type="submit">Sign guestbook</button>
-          <p id="guestbook-status" role="status" aria-live="polite"></p>
-        </form>
-        <div id="guestbook-entries" class="guestbook-entries" aria-live="polite"></div>
+        <div class="guestbook-list" aria-labelledby="guestbook-entries-title">
+          <h4 id="guestbook-entries-title">Approved notes</h4>
+          <div id="guestbook-entries" class="guestbook-entries" aria-live="polite"></div>
+        </div>
+        <div class="guestbook-compose">
+          <h4 id="guestbook-form-title">Leave a note</h4>
+          <p class="guestbook-note">New notes appear after approval.</p>
+          <form id="guestbook-form" aria-labelledby="guestbook-form-title">
+            <div class="guestbook-fields">
+              <label class="guestbook-field" for="guestbook-name">
+                <span>Name</span>
+                <input id="guestbook-name" name="name" maxlength="40" required autocomplete="name" />
+              </label>
+              <label class="guestbook-field" for="guestbook-message">
+                <span>Message</span>
+                <textarea id="guestbook-message" name="message" maxlength="500" rows="3" required></textarea>
+              </label>
+            </div>
+            <div class="guestbook-honeypot" aria-hidden="true">
+              <label for="guestbook-website">Leave this field blank</label>
+              <input id="guestbook-website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+            <div class="cf-turnstile" data-sitekey={guestbookSiteKey} data-theme="dark"></div>
+            <div class="guestbook-actions">
+              <button type="submit">Sign guestbook</button>
+              <p id="guestbook-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div>
       </>
     ) : (
       <p class="guestbook-note">The guestbook is being set up. Check back shortly.</p>
@@ -231,5 +245,69 @@ const personJsonLd = {
 
   .more-link a {
     color: var(--neon-cyan);
+  }
+
+  .guestbook-list h4,
+  .guestbook-compose h4 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--neon-cyan);
+  }
+
+  .guestbook-compose {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border-top: 1px dashed var(--color-border);
+    background: rgb(5 5 26 / 45%);
+  }
+
+  .guestbook-compose .guestbook-note {
+    margin: 0 0 0.9rem;
+  }
+
+  #guestbook-form {
+    max-width: none;
+    margin: 0;
+    gap: 0.75rem;
+  }
+
+  .guestbook-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .guestbook-field {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  #guestbook-form input,
+  #guestbook-form textarea {
+    box-sizing: border-box;
+  }
+
+  #guestbook-form textarea {
+    min-height: 5.25rem;
+  }
+
+  .guestbook-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  #guestbook-status {
+    margin: 0;
+  }
+
+  @media (min-width: 36rem) {
+    .guestbook-fields {
+      grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 1.3fr);
+      align-items: start;
+    }
   }
 </style>
