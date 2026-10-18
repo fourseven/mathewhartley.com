@@ -9,7 +9,7 @@ My degree is in electrical engineering. I mostly chose it because it sounded coo
 
 Arduinos were fun, but I was always time-poor and found the feedback loop slow. You'd carve out an evening, spend half of it re-learning the toolchain, another quarter debugging why the code is boot-looping, and maybe get an LED to blink before bed. One stalled evening and the project goes back in the box.
 
-But the real difference between now and five or ten years ago is that LLM coding tools exist. I'm comfortable working through an AI, and that changes the shape of what's viable when you're time-poor.
+But the real difference between now and five or ten years ago is that LLM coding tools exist. I'm comfortable working through an AI, and that changes the shape of what's viable when you're time-poor. I've written before about [running the cheap flash-tier models](/blog/2026-09-10-deepseek-v4-flash-agent/) for this kind of work: capable enough for firmware and side projects, cheap enough that you don't think about the meter.
 
 ---
 
