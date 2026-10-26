@@ -2,6 +2,7 @@
 title: Five weeks, seven generators, one bunny
 date: 2026-09-10
 tags: AI, Experiments, Embedded
+description: Seven attempts at a 3D mascot for a small ESP32 device. The procedural, rule-based generators shipped in a day; the AI image models took five weeks.
 ---
 
 It's a small ESP32-S3 AI assistant. A few people on Twitter have been doing cool things with these, and I tried to replicate them without any luck. The sticking point turned out to be the face: a small creature character, plush-toy energy, that reads well on a little AMOLED screen. You'd think five weeks of AI tooling would make short work of a mascot.
