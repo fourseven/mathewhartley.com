@@ -35,7 +35,7 @@ Cancelling is the step people get stuck on, and it isn't always your fault.
 
 **This is a known problem, not a personal failing.**
 
-The Commerce Commission has said subscription traps are an area of active enforcement and focus, and that making cancellation deliberately difficult can breach the Fair Trading Act. Research quoted by RNZ earlier this year put the cost of dark patterns and unfair subscription models to New Zealanders at more than $60 million a year. There's also a member's bill aimed at making it as easy to cancel as it is to join, which tells you how one-sided the current setup is.
+The Commerce Commission has said [subscription traps](https://www.comcom.govt.nz/news-and-media/news-and-events/2025/comcom-takes-hellofresh-to-court-for-misleading-consumers-over-subscriptions/) are one of its current enforcement priorities, and that obstructing cancellation can fall foul of the Fair Trading Act. Consumer NZ research, [quoted by RNZ in February](https://www.rnz.co.nz/news/business/586268/here-s-what-you-need-to-know-to-avoid-multi-million-dollar-subscription-traps), put the cost of dark patterns and unfair subscription models to New Zealanders at more than $60 million a year. There's also a member's bill aimed at making it as easy to cancel as it is to join, which tells you how one-sided the current setup is.
 
 Which is a long way of saying: the friction is designed. A business that makes you phone up during office hours to cancel a $9.99 subscription is not confused about what it's doing.
 
