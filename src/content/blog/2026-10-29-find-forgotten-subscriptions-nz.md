@@ -41,6 +41,12 @@ Which is a long way of saying: the friction is designed. A business that makes y
 
 ---
 
+**Your bank might already show you some of this. It sees less than you'd think.**
+
+[ASB's Card Tracker](https://www.asb.co.nz/credit-cards/card-tracker.html), for example, lists the subscriptions charged to an ASB Visa card going back thirteen months, free, inside the app. Useful. But it's card payments on that bank's cards only. A gym direct debit, an automatic payment set up years ago, or the subscription your partner pays from their own account won't appear in it. And it's a snapshot: nothing tells you whether the charge came back after you cancelled.
+
+---
+
 **Doing this by hand is fine once. It's the doing-it-again that fails.**
 
 The reason I ended up building something for this is that the manual version works exactly until the next free trial converts, or the next annual renewal lands, or the next price rise goes through unnoticed. Then you're back reading statements again.
