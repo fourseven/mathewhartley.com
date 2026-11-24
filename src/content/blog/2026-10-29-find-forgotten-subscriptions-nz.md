@@ -49,9 +49,9 @@ Which is a long way of saying: the friction is designed. A business that makes y
 
 **Doing this by hand is fine once. It's the doing-it-again that fails.**
 
-The reason I ended up building something for this is that the manual version works exactly until the next free trial converts, or the next annual renewal lands, or the next price rise goes through unnoticed. Then you're back reading statements again.
+The reason I ended up building a [subscription tracker for NZ bank accounts](https://getparlo.app/subscription-tracker-nz) is that the manual version works exactly until the next free trial converts, or the next annual renewal lands, or the next price rise goes through unnoticed. Then you're back reading statements again.
 
-[Parlo](https://getparlo.app/) reads your NZ bank accounts through Akahu, under the open banking framework, and looks for those three shapes specifically: the forgotten subscriptions, the creeping bills, and the things you and your partner are both paying for. You swipe through the findings and it counts what you've saved. It also keeps watching after you cancel, so a saving only counts once the charge has actually stopped.
+Parlo reads your NZ bank accounts through Akahu, under the open banking framework, and looks for those three shapes specifically: the forgotten subscriptions, the creeping bills, and the things you and your partner are both paying for. You swipe through the findings and it counts what you've saved. It also keeps watching after you cancel, so a saving only counts once the charge has actually stopped.
 
 It's not live yet, there's a waitlist, and it covers the major NZ banks. If you'd rather do it by hand, the method above is free and it works.
 
